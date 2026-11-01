@@ -28,7 +28,7 @@ gcc Project.c -o project
 Open `index.html` in any browser.
 
 ## Live Demo
-[Add your Vercel/Netlify link here]
+https://student-profile-system.netlify.app/
 
 ## Team Members
 | Name | Roll No |
