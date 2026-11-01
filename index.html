@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Information System | C Project</title>
+<style>
+  :root { --bg:#f5f7fb; --card:#ffffff; --text:#1c2333; --muted:#5d6b85; --accent:#2f6fed; --border:#dde3ef; --code:#0f172a; --codetext:#d6e2ff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0e1320; --card:#171e30; --text:#e8ecf6; --muted:#9aa7c2; --accent:#6c9bff; --border:#2a3350; --code:#0a0f1c; --codetext:#d6e2ff; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+  header { padding:36px 20px 10px; text-align:center; }
+  header h1 { margin:0 0 6px; font-size:1.9rem; }
+  header p { margin:0; color:var(--muted); }
+  main { max-width:900px; margin:0 auto; padding:20px; display:grid; gap:20px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; }
+  .card h2 { margin-top:0; font-size:1.2rem; }
+  label { display:block; font-weight:600; margin:14px 0 6px; font-size:.92rem; }
+  input, select { width:100%; padding:11px 12px; border-radius:9px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:1rem; }
+  input:focus, select:focus { outline:2px solid var(--accent); border-color:transparent; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:600px){ .row { grid-template-columns:1fr; } }
+  .err { color:#d93b3b; font-size:.82rem; min-height:1em; margin-top:4px; }
+  .btns { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  button { padding:11px 20px; border-radius:9px; border:none; font-size:1rem; cursor:pointer; font-weight:600; }
+  .primary { background:var(--accent); color:#fff; }
+  .ghost { background:transparent; color:var(--text); border:1px solid var(--border); }
+  pre { background:var(--code); color:var(--codetext); padding:16px; border-radius:10px; overflow-x:auto; font-size:.88rem; margin:0; }
+  .console { min-height:150px; white-space:pre-wrap; }
+  .tag { display:inline-block; background:var(--accent); color:#fff; border-radius:6px; padding:2px 8px; font-size:.75rem; margin-right:6px; }
+  ul { padding-left:20px; margin:8px 0 0; }
+  li { margin-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:.95rem; }
+  th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--border); }
+  th { color:var(--muted); font-weight:600; }
+  footer { text-align:center; color:var(--muted); padding:20px; font-size:.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Student Information System</h1>
+  <p>Web version of my C program that stores and shows student details using a <code>struct</code></p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>1. Enter Student Details</h2>
+    <form id="form" novalidate>
+      <div class="row">
+        <div>
+          <label for="name">Student Name</label>
+          <input id="name" type="text" maxlength="99" placeholder="e.g. Rahul Sharma">
+          <div class="err" id="e-name"></div>
+        </div>
+        <div>
+          <label for="dept">Department</label>
+          <input id="dept" type="text" maxlength="99" placeholder="e.g. Computer Science">
+          <div class="err" id="e-dept"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="sem">Semester</label>
+          <select id="sem">
+            <option value="">Select semester</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+            <option>5</option><option>6</option><option>7</option><option>8</option>
+          </select>
+          <div class="err" id="e-sem"></div>
+        </div>
+        <div>
+          <label for="roll">Roll Number</label>
+          <input id="roll" type="number" min="1" placeholder="e.g. 101">
+          <div class="err" id="e-roll"></div>
+        </div>
+      </div>
+      <label for="email">Email</label>
+      <input id="email" type="email" maxlength="99" placeholder="e.g. rahul@college.edu">
+      <div class="err" id="e-email"></div>
+      <div class="btns">
+        <button type="submit" class="primary">Show Information</button>
+        <button type="button" class="ghost" id="reset">Clear</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>2. Output (same as the C program)</h2>
+    <pre class="console" id="out">Waiting for input...</pre>
+  </section>
+
+  <section class="card">
+    <h2>3. Saved Students (this session)</h2>
+    <table>
+      <thead><tr><th>Roll</th><th>Name</th><th>Department</th><th>Sem</th><th>Email</th></tr></thead>
+      <tbody id="list"><tr><td colspan="5" style="color:var(--muted)">No students added yet.</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>4. About the Project</h2>
+    <p><span class="tag">Problem</span>Student details are often written on paper, which is slow and easy to get wrong. This program takes the details once and shows them neatly.</p>
+    <p><span class="tag">Objective</span>Show how a C <code>struct</code> can group different types of data (text and numbers) into one record.</p>
+    <p><strong>C concepts used:</strong></p>
+    <ul>
+      <li><code>struct student</code> groups name, department, semester, email and roll number together.</li>
+      <li><code>char[100]</code> arrays store text. <code>int</code> stores numbers.</li>
+      <li><code>scanf("%99s", ...)</code> reads input and the <code>99</code> stops it from overflowing the array.</li>
+      <li><code>printf</code> prints the result. <code>%s</code> is for text and <code>%d</code> is for whole numbers.</li>
+    </ul>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:14px">This page does the same job in JavaScript so it can run live in a browser. The original C code is below.</p>
+  </section>
+
+  <section class="card">
+    <h2>5. Original C Source Code</h2>
+    <pre>#include&lt;stdio.h&gt;
+
+struct student {
+    char name[100];
+    char department[100];
+    int semester;
+    char email[100];
+    int roll_number;
+};
+
+int main() {
+    struct student s;
+    printf("Enter student name: ");
+    scanf("%99s", s.name);
+
+    printf("Enter student department: ");
+    scanf("%99s", s.department);
+
+    printf("Enter student semester: ");
+    scanf("%d", &amp;s.semester);
+
+    printf("Enter student email: ");
+    scanf("%99s", s.email);
+
+    printf("Enter student roll number: ");
+    scanf("%d", &amp;s.roll_number);
+
+    printf("\nStudent Information:\n");
+    printf("Name: %s\n", s.name);
+    printf("Department: %s\n", s.department);
+    printf("Semester: %d\n", s.semester);
+    printf("Email: %s\n", s.email);
+    printf("Roll Number: %d\n", s.roll_number);
+
+    return 0;
+}</pre>
+  </section>
+</main>
+
+<footer>
+  Made by Rishi (2606038), Smit (2606031), Kishor (2606006) and Anushesh (2606013)<br>
+  Xavier's Technical Institute
+</footer>
+
+<script>
+  var students = [];
+  var form = document.getElementById('form');
+  var out = document.getElementById('out');
+  var list = document.getElementById('list');
+
+  function setErr(id, msg) { document.getElementById('e-' + id).textContent = msg; return !msg; }
+
+  function esc(t) {
+    return String(t).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('name').value.trim();
+    var dept = document.getElementById('dept').value.trim();
+    var sem = document.getElementById('sem').value;
+    var email = document.getElementById('email').value.trim();
+    var roll = document.getElementById('roll').value.trim();
+
+    var ok = true;
+    ok = setErr('name', name ? '' : 'Please enter the name.') && ok;
+    ok = setErr('dept', dept ? '' : 'Please enter the department.') && ok;
+    ok = setErr('sem', sem ? '' : 'Please select a semester.') && ok;
+    ok = setErr('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? '' : 'Please enter a valid email.') && ok;
+    ok = setErr('roll', (/^\d+$/.test(roll) && Number(roll) > 0) ? '' : 'Roll number must be a positive whole number.') && ok;
+    if (!ok) return;
+
+    out.textContent =
+      'Student Information:\n' +
+      'Name: ' + name + '\n' +
+      'Department: ' + dept + '\n' +
+      'Semester: ' + sem + '\n' +
+      'Email: ' + email + '\n' +
+      'Roll Number: ' + roll;
+
+    students.push({ name: name, dept: dept, sem: sem, email: email, roll: roll });
+    render();
+  });
+
+  document.getElementById('reset').addEventListener('click', function () {
+    form.reset();
+    ['name','dept','sem','email','roll'].forEach(function (k) { setErr(k, ''); });
+    out.textContent = 'Waiting for input...';
+  });
+
+  function render() {
+    list.innerHTML = students.map(function (s) {
+      return '<tr><td>' + esc(s.roll) + '</td><td>' + esc(s.name) + '</td><td>' + esc(s.dept) +
+             '</td><td>' + esc(s.sem) + '</td><td>' + esc(s.email) + '</td></tr>';
+    }).join('');
+  }
+</script>
+</body>
+</html>
