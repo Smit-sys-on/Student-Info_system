@@ -5,12 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Student Information System | C Project</title>
 <style>
-  :root { --bg:#f5f7fb; --card:#ffffff; --text:#1c2333; --muted:#5d6b85; --accent:#2f6fed; --border:#dde3ef; --code:#0f172a; --codetext:#d6e2ff; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#0e1320; --card:#171e30; --text:#e8ecf6; --muted:#9aa7c2; --accent:#6c9bff; --border:#2a3350; --code:#0a0f1c; --codetext:#d6e2ff; }
-  }
+  :root { --bg:linear-gradient(160deg,#f5ecd9 0%,#efe3c8 50%,#e9dcc0 100%); --field:#faf5e8; --card:#fffdf7; --text:#2b2a26; --muted:#6b6455; --accent:#2f6fed; --border:#dccfb2; --code:#1f2430; --codetext:#e6e9f2; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); min-height:100vh; color:var(--text); line-height:1.55; }
   header { padding:36px 20px 10px; text-align:center; }
   header h1 { margin:0 0 6px; font-size:1.9rem; }
   header p { margin:0; color:var(--muted); }
@@ -18,7 +15,7 @@
   .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; }
   .card h2 { margin-top:0; font-size:1.2rem; }
   label { display:block; font-weight:600; margin:14px 0 6px; font-size:.92rem; }
-  input, select { width:100%; padding:11px 12px; border-radius:9px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:1rem; }
+  input, select { width:100%; padding:11px 12px; border-radius:9px; border:1px solid var(--border); background:var(--field); color:var(--text); font-size:1rem; }
   input:focus, select:focus { outline:2px solid var(--accent); border-color:transparent; }
   .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   @media (max-width:600px){ .row { grid-template-columns:1fr; } }
@@ -81,7 +78,7 @@
       <div class="err" id="e-email"></div>
       <div class="btns">
         <button type="submit" class="primary">Show Information</button>
-        <button type="button" class="ghost" id="reset">Clear</button>
+        <button type="button" class="ghost" id="clearBtn">Clear</button>
       </div>
     </form>
   </section>
@@ -107,16 +104,17 @@
     <ul>
       <li><code>struct student</code> groups name, department, semester, email and roll number together.</li>
       <li><code>char[100]</code> arrays store text. <code>int</code> stores numbers.</li>
-      <li><code>scanf("%99s", ...)</code> reads input and the <code>99</code> stops it from overflowing the array.</li>
+      <li><code>fgets</code> reads a whole line (spaces allowed) and stops at the array size, so long input cannot overflow it.</li>
+      <li><code>sscanf</code> and small functions (<code>read_int</code>, <code>read_text</code>, <code>read_email</code>) check the input and ask again if it is wrong.</li>
       <li><code>printf</code> prints the result. <code>%s</code> is for text and <code>%d</code> is for whole numbers.</li>
     </ul>
     <p style="color:var(--muted);font-size:.9rem;margin-top:14px">This page does the same job in JavaScript so it can run live in a browser. The original C code is below.</p>
   </section>
 
   <section class="card">
-    <h2>5. Original C Source Code</h2>
-    <pre>#include <stdio.h>
-#include <string.h>
+    <h2>5. C Source Code</h2>
+    <pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
 
 struct student {
     char name[100];
@@ -126,6 +124,7 @@ struct student {
     int roll_number;
 };
 
+/* Read a line of text (spaces allowed). Ask again if empty. */
 void read_text(const char *prompt, char *dest, int size) {
     while (1) {
         printf("%s", prompt);
@@ -135,7 +134,7 @@ void read_text(const char *prompt, char *dest, int size) {
         }
         if (strchr(dest, '\n') == NULL) {      /* input was too long */
             int c;
-            while ((c = getchar()) != '\n' && c != EOF)
+            while ((c = getchar()) != '\n' &amp;&amp; c != EOF)
                 ;                              /* throw away the extra letters */
         }
         dest[strcspn(dest, "\n")] = '\0';   /* remove the newline */
@@ -153,7 +152,7 @@ int read_int(const char *prompt, int min, int max) {
         printf("%s", prompt);
         if (fgets(line, sizeof(line), stdin) == NULL)
             return min;
-        if (sscanf(line, "%d", &value) == 1 && value >= min && value <= max)
+        if (sscanf(line, "%d", &amp;value) == 1 &amp;&amp; value &gt;= min &amp;&amp; value &lt;= max)
             return value;
         printf("Please enter a number from %d to %d.\n", min, max);
     }
@@ -164,7 +163,7 @@ void read_email(char *dest, int size) {
     while (1) {
         read_text("Enter student email: ", dest, size);
         char *at = strchr(dest, '@');
-        if (at != NULL && at != dest && strchr(at, '.') != NULL)
+        if (at != NULL &amp;&amp; at != dest &amp;&amp; strchr(at, '.') != NULL)
             return;
         printf("Please enter a valid email.\n");
     }
@@ -239,7 +238,7 @@ int main() {
     render();
   });
 
-  document.getElementById('reset').addEventListener('click', function () {
+  document.getElementById("clearBtn").addEventListener('click', function () {
     form.reset();
     ['name','dept','sem','email','roll'].forEach(function (k) { setErr(k, ''); });
     out.textContent = 'Waiting for input...';
